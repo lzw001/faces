@@ -36,6 +36,7 @@ class FacesRecognizer(object):
                 top=face.top(),
                 bottom=face.bottom(),
                 left=face.left(),
-                right=face.right()
+                right=face.right(),
+                uncertainty=clf_proba.tolist()[np.argmax(clf_proba)]
             )
         return recognized_people

@@ -35,36 +35,42 @@ class Videos2Frames(OSUtils):
         self.datasets = [train_dir, test_dir]
 
     def convert_videos_to_frames(
-    	self,
-    	rotation: int = 90,
-    	resize: tuple = (1024, 768),
-    	test_size=0.25
+        self,
+        rotation: int = 270,
+        crop: dict = dict(left=420, right=420, top=0, bottom=0),
+        resize: tuple = (600, 600),
+        test_size=0.25
     ) -> None:
         """ Convert videos to frames (with train and test set split). """
         self._make_dirs()
         for video, person in zip(self.videos, self.people):
             video = cv2.VideoCapture(video)
             success, image = video.read()
-            image = self._preprocess_frame(image, rotation=rotation, resize=resize)
             count = 0
             while success:
+                image = self._preprocess_frame(image, rotation=rotation, resize=resize)
                 if self._choose_dataset(test_size=test_size):
                     cv2.imwrite(os.path.join(self.datasets[0], person, '%d.jpg' % count), image)
                 else:
                     cv2.imwrite(os.path.join(self.datasets[1], person, '%d.jpg' % count), image)
                 success, image = video.read()
-                image = self._preprocess_frame(image, rotation=rotation, resize=resize)
                 count += 1
 
     @staticmethod
     def _preprocess_frame(
         frame: np.ndarray,
-        rotation: int = 90,
-        resize: tuple = (1024, 768)
+        rotation: int = 270,
+        crop: dict = dict(left = 420, right=420, top=0, bottom=0),
+        resize: tuple = (600, 600)        
     ):
         """ Preprocess frame captured from video. """
         if rotation:
             frame = imutils.rotate(frame, rotation)
+        if crop:
+            frame = frame[
+                crop['bottom']:frame.shape[0]-crop['top'],
+                crop['left']:frame.shape[1]-crop['right'],
+                :]
         if resize:
             frame = cv2.resize(frame, resize)
         return frame

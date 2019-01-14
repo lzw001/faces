@@ -48,7 +48,7 @@ class Videos2Frames(OSUtils):
             success, image = video.read()
             count = 0
             while success:
-                image = self._preprocess_frame(image, rotation=rotation, resize=resize)
+                image = self.preprocess_frame(image, rotation=rotation, resize=resize)
                 if self._choose_dataset(test_size=test_size):
                     cv2.imwrite(os.path.join(self.datasets[0], person, '%d.jpg' % count), image)
                 else:
@@ -57,7 +57,7 @@ class Videos2Frames(OSUtils):
                 count += 1
 
     @staticmethod
-    def _preprocess_frame(
+    def preprocess_frame(
         frame: np.ndarray,
         rotation: int = 270,
         crop: dict = dict(left = 420, right=420, top=0, bottom=0),

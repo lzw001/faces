@@ -7,9 +7,10 @@ import dlib
 from typing import Union
 from tqdm import tqdm
 from sklearn.metrics import euclidean_distances
+from .utils import ImageUtils
 
 
-class FaceLandmarksTransformer(object):
+class FaceLandmarksTransformer(ImageUtils):
 
     def __init__(self, face_landmarks_predictor: str) -> None:
 
@@ -21,7 +22,8 @@ class FaceLandmarksTransformer(object):
         self,
         path_to_images: str,
         path_to_classes: list = ['anna', 'lukasz'],
-        images_extension: str = '*.jpg'
+        images_extension: str = '*.jpg',
+        landmarks_flatten_dimension: int = int(1/2 * (68 * 68 - 68))
     ) -> Union[np.ndarray, np.ndarray]:
         """ Load images from directories. Directory's names should correspond
         to label of images, ex. person's name.
@@ -32,14 +34,13 @@ class FaceLandmarksTransformer(object):
 
         :return: landmarks, classes
         """
-        images, classes = [], []
-        for path_to_class in path_to_classes:
-            images_in_directory = glob.glob(
-                os.path.join(path_to_images, path_to_class, images_extension))
-            images.extend(images_in_directory)
-            classes.extend([path_to_class for _ in range(len(images_in_directory))])
+        images, classes = self.get_paths_and_classes(
+        	path_to_images=path_to_images,
+        	path_to_classes=path_to_classes,
+        	images_extension=images_extension
+        )
         classes = np.array(classes)
-        landmarks = np.zeros(shape=(len(images), int(1/2 * (68 * 68 - 68))))
+        landmarks = np.zeros(shape=(len(images), landmarks_flatten_dimension))
         for i, image in tqdm(enumerate(images)):
             image = dlib.load_rgb_image(image)
             try:

@@ -1,9 +1,11 @@
 import os
+import glob
 import warnings
 import numpy as np
 import cv2
 import imutils
 
+from typing import Union
 
 class OSUtils(object):
 
@@ -49,3 +51,28 @@ class ImageUtils(object):
         if resize:
             image = cv2.resize(image, resize)
         return image
+
+    def get_paths_and_classes(
+        self,
+        path_to_images: str,
+        path_to_classes: list = ['anna', 'lukasz'],
+        images_extension: str = '*.jpg'
+    ) -> Union[list, list]:
+        """ Get paths to images and corresponding classes. This method
+        will be used in preparation of datasets and/or transform images
+        from specific directories.
+
+        :param path_to_images:
+        :param path_to_classes:
+        :param images_extension:
+
+        :return: images, classes
+        """
+        images, classes = [], []
+        for path_to_class in path_to_classes:
+            images_in_dir = glob.glob(
+                os.path.join(path_to_images, path_to_class, images_extension)
+            )
+            images.extend(images_in_dir)
+            classes.extend([path_to_class for _ in range(len(images_in_dir))])
+        return images, classes

@@ -3,40 +3,29 @@ import cv2
 import dlib
 import joblib
 
-from sklearn.metrics import euclidean_distances
+from .transformers import FaceLandmarksTransformer
 
 
-class FacesRecognizer(object):
-    """FacesRecognizer implements methods used in face recognition problem."""
-    def __init__(
-        self,
-        faces_shape_predictor: str,
-        faces_classifier: str,
-        faces_names: list = ['anna', 'lukasz']
-    ) -> None:
+class FaceLandmarksRecognizer(FaceLandmarksTransformer):
 
-        self.faces_shape_predictor = dlib.shape_predictor(faces_shape_predictor)
-        self.faces_classifier = joblib.load(faces_classifier)
-        self.faces_names = faces_names
+	def __init__(self, classifier, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.classifier = joblib.load(classifier)
 
-    def recognize(self, image: np.ndarray) -> dict:
-        """
-        """
-        faces = dlib.get_frontal_face_detector()(image, 1)
-        recognized_people = dict()
-        for face in faces:
-            face_landmarks = self.faces_shape_predictor(image, face)
-            face_landmarks_points = [(point.x, point.y)
-                for point in face_landmarks.parts()]
-            face_landmarks_dists = euclidean_distances(
-                np.array(face_landmarks_points)).reshape(1, -1)
-            clf_proba = self.faces_classifier.predict_proba(face_landmarks_dists)
-            person = self.faces_names[np.argmax(clf_proba)]
-            recognized_people[person] = dict(
-                top=face.top(),
-                bottom=face.bottom(),
-                left=face.left(),
-                right=face.right(),
-                uncertainty=clf_proba.tolist()[np.argmax(clf_proba)]
-            )
-        return recognized_people
+	def predict_class_from_frame(
+		self,
+		image: np.ndarray,
+		people: list = ['anna', 'lukasz'],
+		image_preprocess_params: dict = None
+	) -> list:
+		"""
+		"""
+		if image_preprocess_params:
+			image = self.preprocess_image(image, **image_preprocess_params)
+		try:
+			landmarks_dists = self.face_landmarks_distances(image)
+			prediction = self.classifier.predict_proba(
+				landmarks_dists.reshape(1, -1))
+			return people[np.argmax(prediction)]
+		except IndexError as e:
+			print(e.args + ('face not found.',))

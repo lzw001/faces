@@ -33,6 +33,13 @@ parser.add_argument(
     default='playlists.json',
     help='Define json with playlists.'
 )
+parser.add_argument(
+    '--people', '-cp',
+    type=str,
+    nargs='+',
+    default=['anna', 'lukasz'],
+    help='Define people assigned to playlists.'
+)
 args = parser.parse_args()
 
 with codecs.open(args.playlists, encoding='utf-8') as playlists:
@@ -53,7 +60,7 @@ if __name__ == '__main__':
         if len(images) == args.number_of_images:
             person = flr.predict_class_from_frames(
                 images=images,
-                people=['anna', 'lukasz'],
+                people=args.classes,
                 image_preprocess_params=dict(
                     rotation=None,
                     crop=dict(left=420, right=420, bottom=120, top=120),

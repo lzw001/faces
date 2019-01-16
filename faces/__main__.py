@@ -18,6 +18,12 @@ parser.add_argument(
     default='models/logreg_68_landmarks.joblib',
     help='Choose model that will be used in face recognition task.'
 )
+parser.add_argument(
+    '--number_of_images', '-ni',
+    type=int,
+    default=3,
+    help='Number of images which will be used in final decision.'
+)
 args = parser.parse_args()
 
 
@@ -29,12 +35,13 @@ if __name__ == '__main__':
     )
     # capture image from webcam
     cv2.namedWindow('faces')
-    camera = cv2.VideoCapture(0)
+    camera, images = cv2.VideoCapture(0), []
     while True:
         _, image = camera.read()
-        try:
-            person = flr.predict_class_from_frame(
-                image=image,
+        images.append(image)
+        if len(images) == args.number_of_images:
+            person = flr.predict_class_from_frames(
+                images=images,
                 people=['anna', 'lukasz'],
                 image_preprocess_params=dict(
                     rotation=None,
@@ -42,9 +49,10 @@ if __name__ == '__main__':
                     resize=(256, 256)
                 )
             )
-            print('Hello, {}'.format(person))
-        except Exception as e:
-            next
+            if person:
+                print('Hello, {}'.format(person))
+            # clear images list for next iteration of while loop
+            images = []
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     camera.release()

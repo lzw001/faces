@@ -1,7 +1,10 @@
-import numpy as np
-import cv2
+import os
+import codecs
+import json
 import argparse
-import joblib
+import random
+import time
+import cv2
 
 from .faces_recognizer import FaceLandmarksRecognizer
 
@@ -24,8 +27,16 @@ parser.add_argument(
     default=3,
     help='Number of images which will be used in final decision.'
 )
+parser.add_argument(
+    '--playlists', '-p',
+    type=str,
+    default='playlists.json',
+    help='Define json with playlists.'
+)
 args = parser.parse_args()
 
+with codecs.open(args.playlists, encoding='utf-8') as playlists:
+    playlists = json.load(playlists)
 
 if __name__ == '__main__':
     # define FaceRegonizer
@@ -51,6 +62,10 @@ if __name__ == '__main__':
             )
             if person:
                 print('Hello, {}'.format(person))
+                cmd = 'bash shpotify.sh play uri {}'.format(
+                    random.choice(playlists[person]))
+                os.system(cmd)
+                time.sleep(5)
             # clear images list for next iteration of while loop
             images = []
         if cv2.waitKey(1) & 0xFF == ord('q'):

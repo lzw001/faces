@@ -1,12 +1,10 @@
+# Spotify credentials
+.shpotify.sh
+
 # Prevent images from going to remote repo
 *.jpeg
 *.jpg
 *.png
-
-# Prevent models from going to remote repo
-models/
-*.dat
-*.joblib
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

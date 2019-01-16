@@ -60,7 +60,7 @@ if __name__ == '__main__':
         if len(images) == args.number_of_images:
             person = flr.predict_class_from_frames(
                 images=images,
-                people=args.classes,
+                people=args.people,
                 image_preprocess_params=dict(
                     rotation=None,
                     crop=dict(left=420, right=420, bottom=120, top=120),

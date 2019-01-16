@@ -1,36 +1,50 @@
 import numpy as np
 import cv2
+import argparse
 import joblib
 
-from .utils import Videos2Frames
-from .transformers import FaceLandmarksTransformer
+from .faces_recognizer import FaceLandmarksRecognizer
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+	'--landmarks', '-l',
+	type=str,
+	default='models/shape_predictor_68_face_landmarks.dat',
+	help='Choose model that will be used in face landmarks detection task.'
+)
+parser.add_argument(
+	'--classifier', '-c',
+	type=str,
+	default='models/logreg_68_landmarks.joblib',
+	help='Choose model that will be used in face recognition task.'
+)
+args = parser.parse_args()
 
 
 if __name__ == '__main__':
-	# define transformer which will be used in face landmarks prediction
-	flt = FaceLandmarksTransformer('models/shape_predictor_68_face_landmarks.dat')
-	# load clf
-	logreg = joblib.load('models/logreg_600x600.joblib')
-	# define while loop to capture image from webcam
-	cv2.namedWindow('SpotiFaces')
+	# define FaceRegonizer
+	flr = FaceLandmarksRecognizer(
+		classifier=args.classifier,
+		face_landmarks_predictor=args.landmarks
+	)
+	# capture image from webcam
+	cv2.namedWindow('faces')
 	camera = cv2.VideoCapture(0)
-	predictions = list()
 	while True:
 		_, image = camera.read()
-		image = Videos2Frames.preprocess_frame(image,
-			rotation=None,
-			crop=dict(left=420, right=420, bottom=120, top=120),
-			resize=(256, 256))
-		cv2.imshow('SpotiFaces', image)
 		try:
-			landmarks_dists = flt.face_landmarks_distances(image)
-			prediction = logreg.predict_proba(landmarks_dists.reshape(1, 2278))
-			predictions.append(['anna', 'lukasz'][np.argmax(prediction)])
-		except IndexError:
+			person = flr.predict_class_from_frame(
+				image=image,
+				people=['anna', 'lukasz'],
+				image_preprocess_params=dict(
+					rotation=None,
+					crop=dict(left=420, right=420, bottom=120, top=120),
+					resize=(256, 256)
+				)
+			)
+			print('Hello, {}'.format(person))
+		except Exception as e:
 			next
-		if len(predictions) == 10 and predictions.count(predictions[0]) == len(predictions):
-			print(predictions[0])
-			predictions = list()
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 	camera.release()

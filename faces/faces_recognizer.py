@@ -3,7 +3,7 @@ import cv2
 import dlib
 import joblib
 
-from typing import List
+from typing import List, Optional
 from .transformers import FaceLandmarksTransformer
 
 
@@ -18,7 +18,7 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
         image: np.ndarray,
         people: list = ['anna', 'lukasz'],
         image_preprocess_params: dict = None
-    ) -> list:
+    ) -> Optional[list]:
         """ Predict class from single frame. This method should be used
         in environments with highly constrained computational power, ex. RaspberryPi.
 
@@ -43,7 +43,7 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
         images: List[np.ndarray],
         people: list = ['anna', 'lukasz'],
         image_preprocess_params: dict = None
-    ) -> list:
+    ) -> Optional[list]:
         """ Predict classes from consecutives frames. This method could be safer
         (but slower) than predict_class_from_frame. It returns the class after prediction
         made on every frame.
@@ -51,6 +51,8 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
         :param images:
         :param people:
         :param image_preprocess_params:
+
+        :return: person
         """
         predictions, person = [], None
         for image in images:

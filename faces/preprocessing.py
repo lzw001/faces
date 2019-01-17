@@ -26,7 +26,6 @@ class Videos2Datasets(OSUtils, ImageUtils):
         training procedure.
 
         :param test_size:
-        :param *args, **kwargs:
 
         :return: None
         """
@@ -53,6 +52,6 @@ class Videos2Datasets(OSUtils, ImageUtils):
                 self.make_dirs(os.path.join(dataset, person))
 
     @staticmethod
-    def _choose_dataset(test_size=0.25) -> bool:
+    def _choose_dataset(test_size: float = 0.25) -> int:
         """ Choose dataset for specific frame. """
-        return np.random.choice([0, 1], size=1, p=[1-test_size, test_size])
+        return int(np.random.choice([0, 1], size=1, p=[1-test_size, test_size]))

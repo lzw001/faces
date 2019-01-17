@@ -36,7 +36,7 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
                 landmarks_dists.reshape(1, -1))
             return people[np.argmax(prediction)]
         except IndexError as e:
-            print(e.args + ('face not found.',))
+            print('face not found')
 
     def predict_class_from_frames(
         self,
@@ -52,7 +52,7 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
         :param people:
         :param image_preprocess_params:
         """
-        predictions = []
+        predictions, person = [], None
         for image in images:
             prediction = self.predict_class_from_frame(
                 image,
@@ -60,9 +60,10 @@ class FaceLandmarksRecognizer(FaceLandmarksTransformer):
                 image_preprocess_params=image_preprocess_params
             )
             predictions.append(prediction)
+        # predictions must be made on each frame and every time
+        # classifier must predict the same person
         predictions_on_every_frame = len(predictions) == len(images)
         predictions_all_equal = predictions.count(predictions[0]) == len(predictions)
         if predictions_on_every_frame and predictions_all_equal:
-            return predictions[0]
-        else:
-            return None
+            person = predictions[0]
+        return person

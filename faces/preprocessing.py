@@ -38,16 +38,11 @@ class Videos2Datasets(OSUtils, ImageUtils):
             count = 0
             while success:
                 image = self.preprocess_image(image, *args, **kwargs)
-                if self._choose_dataset(test_size=test_size):
-                    cv2.imwrite(
-                        os.path.join(self.datasets[0], person, '%d.jpg' % count),
-                        image
-                    )
-                else:
-                    cv2.imwrite(
-                        os.path.join(self.datasets[1], person, '%d.jpg' % count),
-                        image
-                    )
+                dataset = self._choose_dataset(test_size=test_size)
+                cv2.imwrite(
+                	os.path.join(self.datasets[dataset], person, '%d.jpg' % count),
+                	image
+                )
                 success, image = video.read()
                 count += 1
 
@@ -60,4 +55,4 @@ class Videos2Datasets(OSUtils, ImageUtils):
     @staticmethod
     def _choose_dataset(test_size=0.25) -> bool:
         """ Choose dataset for specific frame. """
-        return np.random.choice([True, False], size=1, p=[1-test_size, test_size])
+        return np.random.choice([0, 1], size=1, p=[1-test_size, test_size])

@@ -126,6 +126,6 @@ Have fun!
 
 Implementation of models requiring more computing power (hosting in the cloud, request via API).
 
-- [] Transfer learning.
-- [] CNN vs. Capsule Networks.
-- [] Siamese Neural Networks for One-shot Image Recognition.
+- [ ] Transfer learning.
+- [ ] CNN vs. Capsule Networks.
+- [ ] Siamese Neural Networks for One-shot Image Recognition.

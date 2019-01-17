@@ -19,16 +19,16 @@ The model was trained on 30-second films containing the faces of the household m
 from faces.preprocessing import Video2Datasets
 
 v2d = Video2Datasets(
-	videos=['movie_faces_lukasz.MOV', 'movie_faces_anna.MOV'],
-	people=['lukasz', 'anna'],
-	train_dir='datasets/train/',
-	test_dir='datasets/test/'
+    videos=['movie_faces_lukasz.MOV', 'movie_faces_anna.MOV'],
+    people=['lukasz', 'anna'],
+    train_dir='datasets/train/',
+    test_dir='datasets/test/'
 )
 v2d.train_test_split(
-	test_size=0.25,
-	rotation=270, # degrees,
-	crop=dict(left=420, right=420, top=0, bottom=0), # pixels
-	resize=(600, 600) # pixels
+    test_size=0.25,
+    rotation=270, # degrees,
+    crop=dict(left=420, right=420, top=0, bottom=0), # pixels
+    resize=(600, 600) # pixels
 )
 ```
 
@@ -73,10 +73,10 @@ Example usage:
 
 ```
 python -m faces --landmarks models/shape_predictor_68_face_landmarks.dat
-	\ --classifier logreg_68_landmarks.joblib
-	\ --number_of_images 3
-	\ --playlists playlists.json
-	\ --people anna lukasz
+    \ --classifier logreg_68_landmarks.joblib
+    \ --number_of_images 3
+    \ --playlists playlists.json
+    \ --people anna lukasz
 ```
 
 Help for command-line arguments.

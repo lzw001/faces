@@ -1,3 +1,8 @@
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
 # Spotify credentials
 .shpotify.sh
 
@@ -5,6 +10,8 @@
 *.jpeg
 *.jpg
 *.png
+*.m4v
+*.mov
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

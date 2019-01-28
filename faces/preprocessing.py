@@ -1,9 +1,13 @@
 import os
+import glob
 import warnings
 import numpy as np
 import cv2
 import imutils
 
+from skimage import io, transform
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms, utils
 from .utils import OSUtils, ImageUtils
 
 
@@ -55,3 +59,23 @@ class Videos2Datasets(OSUtils, ImageUtils):
     def _choose_dataset(test_size: float = 0.25) -> int:
         """ Choose dataset for specific frame. """
         return int(np.random.choice([0, 1], size=1, p=[1-test_size, test_size]))
+
+
+class FacesDataset(Dataset):
+    """FacesDataset will be used by models developed in PyTorch"""
+    def __init__(self, path_to_images: str, transform=None):
+        
+        self.images = glob.glob(pathname=path_to_images)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+        """ """
+        image_path = self.images[idx]
+        image = io.imread(fname=image_path)
+        if self.transform:
+            image = self.transform(image)
+        person = image_path.split('/')[-2]
+        return image, person
